@@ -1,39 +1,20 @@
 services:
-  # Backend Web Service
   - type: web
-    name: aica-backend
-    runtime: python
+    name: code-agent
+    runtime: docker
     region: ohio
-    buildCommand: "cd backend && pip install -r requirements.txt"
-    startCommand: "cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.10.12
-      - key: DATABASE_URL
-        value: sqlite:///./data/app.db
-      - key: CORS_ORIGINS
-        value: "*"
       - key: SECRET_KEY
         generateValue: true
+      - key: DATABASE_URL
+        value: sqlite:////data/app.db
       - key: GROQ_API_KEY
         sync: false
-      - key: OPENAI_API_KEY
-        sync: false
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
+      - key: CORS_ORIGINS
+        value: "*"
     disk:
       name: sqlite-data
-      mountPath: /opt/render/project/src/backend/data
+      mountPath: /data
       sizeGB: 1
-
-  # Frontend Static Site
-  - type: web
-    name: aica-frontend
-    runtime: static
-    region: ohio
-    buildCommand: "cd frontend && npm install && npm run build"
-    staticPublishPath: "./frontend/dist"
-    envVars:
-      - key: VITE_API_URL
-        fromService:
-          type: web
-          name: aica-backend
-          envVarKey: RENDER_EXTERNAL_URL

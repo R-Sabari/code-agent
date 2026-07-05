@@ -11,12 +11,9 @@ class Settings:
     algorithm: str = os.getenv("ALGORITHM", "HS256")
     access_token_expire_minutes: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440"))
     database_url: str = os.getenv("DATABASE_URL", "sqlite:///./app.db")
-    openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
-    openai_model: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
     groq_api_key: str = os.getenv("GROQ_API_KEY", "")
     groq_model: str = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
-    cors_origins: list[str] = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
-    jina_api_key: str = os.getenv("JINA_API_KEY", "")
+    cors_origins: list[str] = os.getenv("CORS_ORIGINS", "*").split(",")
 
 
 settings = Settings()

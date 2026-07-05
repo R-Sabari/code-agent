@@ -7,7 +7,7 @@ passlib[bcrypt]==1.7.4
 bcrypt==3.2.2
 PyJWT==2.9.0
 pydantic[email]==1.10.15
-openai==1.45.0
+groq==0.9.0
 python-multipart==0.0.21
 fpdf==1.7.2
 python-jose[cryptography]==3.3.0
