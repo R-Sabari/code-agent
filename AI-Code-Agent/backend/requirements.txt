@@ -4,7 +4,7 @@ sqlalchemy==2.0.34
 pymysql==1.1.0
 python-dotenv==1.0.1
 passlib[bcrypt]==1.7.4
-bcrypt==4.1.2
+bcrypt==3.2.2
 PyJWT==2.9.0
 pydantic[email]==1.10.15
 openai==1.45.0

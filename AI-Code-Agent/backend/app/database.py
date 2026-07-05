@@ -17,5 +17,12 @@ def get_db():
         db.close()
 
 
+import os
+
 def init_db() -> None:
+    if settings.database_url.startswith("sqlite:///"):
+        db_path = settings.database_url.replace("sqlite:///", "")
+        db_dir = os.path.dirname(db_path)
+        if db_dir and not os.path.exists(db_dir):
+            os.makedirs(db_dir, exist_ok=True)
     Base.metadata.create_all(bind=engine)
