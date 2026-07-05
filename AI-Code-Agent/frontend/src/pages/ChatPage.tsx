@@ -158,13 +158,20 @@ export default function ChatPage() {
   const copyMessage = (text: string) => navigator.clipboard.writeText(text);
 
   const downloadMessage = (text: string) => {
-    const blob = new Blob([text], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'ai-response.txt';
-    a.click();
-    URL.revokeObjectURL(url);
+    import('jspdf').then(({ jsPDF }) => {
+      const doc = new jsPDF();
+      const splitText = doc.splitTextToSize(text, 180);
+      let y = 10;
+      for (let i = 0; i < splitText.length; i++) {
+        if (y > 280) {
+          doc.addPage();
+          y = 10;
+        }
+        doc.text(splitText[i], 10, y);
+        y += 7;
+      }
+      doc.save('ai-response.pdf');
+    });
   };
 
   return (

@@ -107,13 +107,20 @@ export default function PlaygroundPage() {
   };
 
   const downloadResult = () => {
-    const blob = new Blob([result], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${activeTab}-result.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
+    import('jspdf').then(({ jsPDF }) => {
+      const doc = new jsPDF();
+      const splitText = doc.splitTextToSize(result, 180);
+      let y = 10;
+      for (let i = 0; i < splitText.length; i++) {
+        if (y > 280) {
+          doc.addPage();
+          y = 10;
+        }
+        doc.text(splitText[i], 10, y);
+        y += 7;
+      }
+      doc.save(`${activeTab}-result.pdf`);
+    });
   };
 
   return (
