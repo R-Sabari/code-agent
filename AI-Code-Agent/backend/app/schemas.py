@@ -63,3 +63,27 @@ class DownloadRequest(BaseModel):
     title: str
     content: str
     file_format: str = "pdf"
+
+
+class ProjectCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    stack: Optional[str] = None
+
+
+class ProjectUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    stack: Optional[str] = None
+
+
+class ProjectOut(BaseModel):
+    id: int
+    name: str
+    description: Optional[str] = None
+    stack: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+

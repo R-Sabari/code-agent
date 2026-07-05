@@ -234,6 +234,7 @@ export default function PlaygroundPage() {
                               language={match[1]}
                               PreTag="div"
                               customStyle={{ margin: 0, borderRadius: 0, background: '#0d1117', fontSize: 12 }}
+                              codeTagProps={{ style: { background: 'transparent', fontFamily: 'inherit' } }}
                             >
                               {code}
                             </SyntaxHighlighter>

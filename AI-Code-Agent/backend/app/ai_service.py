@@ -3,17 +3,30 @@ from typing import Optional
 
 from app.config import settings
 
-# Support either the newer `OpenAI` client or the legacy `openai` module depending on which is installed.
 try:
     from openai import OpenAI
 
-    client = OpenAI(api_key=settings.openai_api_key) if settings.openai_api_key else None
+    if settings.groq_api_key:
+        client = OpenAI(
+            api_key=settings.groq_api_key,
+            base_url="https://api.groq.com/openai/v1"
+        )
+    else:
+        client = OpenAI(api_key=settings.openai_api_key) if settings.openai_api_key else None
+    
     _use_new_client = True
 except Exception:
     import openai
-
-    openai.api_key = settings.openai_api_key
-    client = openai if settings.openai_api_key else None
+    
+    # Legacy openai is highly discouraged with custom base_url but we try:
+    if settings.groq_api_key:
+        openai.api_key = settings.groq_api_key
+        openai.api_base = "https://api.groq.com/openai/v1"
+        client = openai
+    else:
+        openai.api_key = settings.openai_api_key
+        client = openai if settings.openai_api_key else None
+    
     _use_new_client = False
 
 
@@ -47,10 +60,13 @@ def fallback_response(mode: str, prompt: str) -> str:
 def generate_ai_response(prompt: str, mode: str = "chat") -> str:
     if not client:
         return fallback_response(mode, prompt)
+        
+    model_to_use = settings.groq_model if settings.groq_api_key else settings.openai_model
+    
     try:
         if _use_new_client:
             response = client.chat.completions.create(
-                model=settings.openai_model,
+                model=model_to_use,
                 messages=[
                     {"role": "system", "content": build_system_prompt(mode)},
                     {"role": "user", "content": prompt},
@@ -62,7 +78,7 @@ def generate_ai_response(prompt: str, mode: str = "chat") -> str:
         else:
             # legacy openai package
             response = client.ChatCompletion.create(
-                model=settings.openai_model,
+                model=model_to_use,
                 messages=[
                     {"role": "system", "content": build_system_prompt(mode)},
                     {"role": "user", "content": prompt},

@@ -73,7 +73,7 @@ export default function DashboardPage() {
     },
     {
       label: 'AI Model',
-      value: 'GPT-4',
+      value: 'Groq',
       icon: Bot,
       color: 'text-amber-400',
       bgColor: 'bg-amber-400/10 ring-amber-400/20',

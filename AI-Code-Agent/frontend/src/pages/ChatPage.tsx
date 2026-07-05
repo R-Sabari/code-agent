@@ -65,6 +65,7 @@ function CodeBlock({ language, children }: { language: string; children: string 
         language={language}
         PreTag="div"
         customStyle={{ margin: 0, borderRadius: 0, background: '#0d1117' }}
+        codeTagProps={{ style: { background: 'transparent', fontFamily: 'inherit' } }}
       >
         {children}
       </SyntaxHighlighter>
@@ -361,7 +362,7 @@ export default function ChatPage() {
         </div>
 
         {/* Input */}
-        <div className="border-t border-white/10 bg-slate-900/40 p-4 backdrop-blur sm:p-6">
+        <div className="border-t border-white/10 bg-slate-900/40 p-3 backdrop-blur sm:p-4">
           <form onSubmit={handleSubmit}>
             <div className="mx-auto max-w-3xl rounded-2xl border border-slate-700 bg-slate-950/80 ring-1 ring-white/5 transition focus-within:border-cyan-500/50 focus-within:ring-cyan-500/10">
               <textarea
@@ -370,8 +371,8 @@ export default function ChatPage() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={`Ask the AI (${mode} mode)... Press Enter to send, Shift+Enter for newline.`}
-                rows={3}
-                className="w-full resize-none bg-transparent px-4 py-3 text-sm text-slate-100 placeholder-slate-500 outline-none"
+                rows={2}
+                className="w-full resize-none bg-transparent px-4 py-2 text-sm text-slate-100 placeholder-slate-500 outline-none"
               />
               <div className="flex items-center justify-between border-t border-white/5 px-3 py-2">
                 <span className="text-xs text-slate-500">
