@@ -7,7 +7,6 @@ import {
   MessageSquarePlus,
   Plus,
   SendHorizonal,
-  Trash2,
   User,
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';

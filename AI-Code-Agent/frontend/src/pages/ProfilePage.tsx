@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { MessageSquare, User } from 'lucide-react';
+import { User } from 'lucide-react';
 import api from '../services/api';
 
 export default function ProfilePage() {

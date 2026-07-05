@@ -8,7 +8,6 @@ import {
   Home,
   LogOut,
   MessageSquare,
-  Settings,
   Shield,
   User,
 } from 'lucide-react';
