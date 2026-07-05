@@ -1,11 +1,22 @@
-from groq import Groq
+from __future__ import annotations
 
 from app.config import settings
 
-# Initialise Groq client (works as long as GROQ_API_KEY is set)
-_client: Groq | None = None
-if settings.groq_api_key:
-    _client = Groq(api_key=settings.groq_api_key)
+
+def _get_client():
+    """Lazily create the Groq client so a missing key doesn't crash the server on startup."""
+    if not settings.groq_api_key:
+        return None
+    try:
+        from groq import Groq
+        return Groq(api_key=settings.groq_api_key)
+    except Exception as exc:
+        print(f"[ai_service] Failed to create Groq client: {exc}")
+        return None
+
+
+# Module-level cached client
+_client = _get_client()
 
 
 def build_system_prompt(mode: str) -> str:
@@ -45,21 +56,23 @@ def build_system_prompt(mode: str) -> str:
 
 
 def generate_ai_response(prompt: str, mode: str = "chat") -> str:
-    if not _client:
+    client = _client
+    if client is None:
         return (
             "⚠️ The AI assistant is not configured. "
-            "Please set the **GROQ_API_KEY** environment variable in your Render service settings and redeploy."
+            "Please set the **GROQ_API_KEY** environment variable in your Render service "
+            "settings (Dashboard → Service → Environment) and trigger a manual deploy."
         )
 
     try:
-        response = _client.chat.completions.create(
+        response = client.chat.completions.create(
             model=settings.groq_model,
             messages=[
                 {"role": "system", "content": build_system_prompt(mode)},
                 {"role": "user", "content": prompt},
             ],
             temperature=0.3,
-            max_tokens=1500,
+            max_tokens=2048,
         )
         content = response.choices[0].message.content
         return content if content else "The AI returned an empty response. Please try again."
@@ -68,8 +81,10 @@ def generate_ai_response(prompt: str, mode: str = "chat") -> str:
         if "rate_limit" in error_text or "429" in error_text:
             return "⚠️ The AI assistant is temporarily rate-limited. Please wait a moment and try again."
         if "authentication" in error_text or "api key" in error_text or "401" in error_text:
-            return "⚠️ The GROQ_API_KEY is invalid or unauthorised. Please verify the key in your Render environment variables."
+            return (
+                "⚠️ The GROQ_API_KEY is invalid or unauthorised. "
+                "Please verify the key in your Render environment variables."
+            )
         if "model" in error_text or "404" in error_text:
             return "⚠️ The requested AI model is unavailable. Please check the GROQ_MODEL setting."
-        # Generic fallback with error hint
         return f"⚠️ The AI assistant encountered an error: {exc}. Please try again."
