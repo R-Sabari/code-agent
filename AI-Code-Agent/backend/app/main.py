@@ -28,3 +28,23 @@ def startup_event() -> None:
 @app.get("/health")
 def health_check() -> dict:
     return {"status": "ok", "service": settings.app_name}
+
+import os
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+# Serve frontend static files if they exist (for monolithic deployment)
+frontend_dist = os.path.join(os.path.dirname(__file__), "../../frontend/dist")
+if os.path.exists(frontend_dist):
+    app.mount("/assets", StaticFiles(directory=os.path.join(frontend_dist, "assets")), name="assets")
+    
+    @app.get("/{full_path:path}")
+    def catch_all(full_path: str):
+        # Allow API routes to 404 naturally if they don't exist, rather than returning index.html
+        if full_path.startswith("api/"):
+            return {"detail": "Not Found"}
+        
+        file_path = os.path.join(frontend_dist, full_path)
+        if os.path.isfile(file_path):
+            return FileResponse(file_path)
+        return FileResponse(os.path.join(frontend_dist, "index.html"))
